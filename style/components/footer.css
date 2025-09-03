@@ -1,0 +1,42 @@
+.footer {
+      background-color: #00d4ff; 
+      padding: 15px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.clear-history{    
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: white;
+    font-weight: bold;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.search-history-container {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 10px; 
+    align-items: center;
+}
+
+.search-history-item {
+    background-color: #f0f0f0; 
+    padding: 5px 10px;
+    border-radius: 5px; 
+    font-size: 0.9rem;
+    color: #333;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); 
+    transition: background-color 0.3s ease; 
+}
+
+.search-history-item:hover {
+    background-color: #e0e0e0; 
+}

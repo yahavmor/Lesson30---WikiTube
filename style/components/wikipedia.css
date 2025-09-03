@@ -1,0 +1,28 @@
+.wikipedia-container {
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      margin-top: 40px;
+}
+.wiki-item {
+      margin-bottom: 20px;
+}
+
+.wiki-title {
+      font-size: 1.2rem;
+      color: #007BFF;
+      margin: 0;
+}
+ 
+.wiki-snippet {
+      font-size: 1.3rem;
+      color: #555;
+}
+.wiki-link {
+      font-size: 0.8rem;
+      color: #007BFF;
+      text-decoration: none;
+}
+.wiki-link:hover {
+      text-decoration: underline;
+}
