@@ -9,6 +9,10 @@
 <body onload="init()">
     <header class="main-header">
         <h1>WikiTube</h1>
+        <div class="Theme-change">
+            <button onclick="onChangeTheme()">Change Theme</button>
+
+        </div>
         <div class="search">
             <input type="text" class="search-input" placeholder="Search" onkeydown="handleKeyPress(event)">
             <button class="search-button" onclick="search()">Search</button>
@@ -22,7 +26,7 @@
         </div>
     </main>
     <footer class="footer">
-        <button class="clear-history" onclick="clearHistory()">Clear History</button>
+        <button class="clear-history" onclick="onClearBtn()">Clear History</button>
         <div class="search-history-container"></div>
     </footer>
 
@@ -30,8 +34,18 @@
         <div class="modal-header">Confirm Deletion</div>
         <p>Are you sure you want to delete this items? This action cannot be undone.</p>
         <div class="modal-actions">
-          <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-          <button class="btn-confirm" onclick="confirmDeletion()">Delete</button>
+          <button class="btn-cancel">Cancel</button>
+          <button class="btn-confirm">Delete</button>
+        </div>
+    </dialog>
+
+
+    <dialog class="confirm-Theme-modal">
+        <div class="modal-header">Confirm Theme Change</div>
+        <p>Are you sure you want to change theme color?</p>
+        <div class="modal-actions">
+          <button class="btn-cancel-change">Don't Change</button>
+          <button class="btn-confirm-change">Change</button>
         </div>
     </dialog>
 

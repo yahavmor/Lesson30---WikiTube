@@ -1,12 +1,9 @@
 .confirm-deletion-modal {
 position: fixed;
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
 border: none;
 padding: 2rem;
 background: white;
-box-shadow: 0 0 10px rgba(0,0,0,0.3);
+box-shadow: 0 0 10px rgba(0,0,0,0.8);
 border-radius: 8px;
 width: 300px;
 z-index: 1000;

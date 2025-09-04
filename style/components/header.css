@@ -6,6 +6,7 @@
     justify-content: space-between;
     padding: 10px 30px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.8);
+    transition:background-color .3s ease-in-out ;
 }
 .main-header h1 {
     margin: 0;
@@ -37,4 +38,23 @@
 .search-button:hover {
     background-color: #0056b3; 
 }
-  
+.Theme-change button {
+    color : '#444';
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.Theme-change button:hover {
+    background-color: #666;         
+    transform: scale(1.05);        
+}
+
+.Theme-change button:active {
+    background-color: #333;         
+    transform: scale(0.98);         
+}

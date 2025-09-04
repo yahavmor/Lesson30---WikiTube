@@ -1,15 +1,17 @@
+
 .footer {
-      background-color: #00d4ff; 
-      padding: 15px 20px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 30px;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 30px;
+    padding: 15px 20px;
+    align-items: center;
+    background-color: #007BFF; 
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    transition:background-color .3s ease-in-out;
 }
 
-.clear-history{    
+.clear-history {    
     padding: 10px 20px;
     font-size: 1rem;
     color: white;
@@ -20,6 +22,11 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
+
+.clear-history:hover {
+    background-color: #0056b3; 
+}
+
 .search-history-container {
     display: flex;
     flex-wrap: wrap; 
@@ -35,6 +42,7 @@
     color: #333;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); 
     transition: background-color 0.3s ease; 
+    cursor: pointer;
 }
 
 .search-history-item:hover {
