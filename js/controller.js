@@ -1,279 +1,197 @@
-"use strict";
+"use strict"
 
 function init() {
-  if (gCacheVideos.length && gCacheVideos.length <= 4) {
-    renderVideos(gCacheVideos);
-    renderMainVideo(gCacheVideos[0]);
+  const shouldRenderCache = gCacheVideos.length > 0 && gCacheVideos.length <= 4
+
+  if (shouldRenderCache) {
+    renderVideos(gCacheVideos)
+    renderMainVideo(gCacheVideos[0])
   } else {
-    fetchAndRenderVideos(defaultSearchTerm);
+    fetchVideos(defaultSearchTerm).then(() => {
+      renderVideos(gCacheVideos)
+      renderMainVideo(gCacheVideos[0])
+    })
   }
-  fetchAndRenderWiki(defaultSearchTerm);
-  renderSearchHistory(gCacheSearches);
-  focusSearchBar();
+
+  fetchWiki(defaultSearchTerm).then(renderWiki)
+  renderSearchHistory(gCacheSearches)
+  focusSearchBar()
 }
-function focusSearchBar() {
-  var elInput = document.querySelector(".search-input");
-  elInput.focus();
-}
-function renderMainVideo(video) {
-  var mainVideoContainer = document.querySelector(".main-video-container");
-
-  mainVideoContainer.innerHTML = "";
-
-  const videoId = video.id.videoId;
-
-  const strHtml = `
-
-        <div class="main-video-item">
-
-            <iframe class="main-video" width="500" height="350"  
-
-                src="https://www.youtube.com/embed/${videoId}"        
-
-            </iframe>
-
-        </div>`;
-
-  mainVideoContainer.innerHTML = strHtml;
-}
-
-function renderVideos(videos) {
-  var videoContainer = document.querySelector(".video-container");
-
-  videoContainer.innerHTML = "";
-
-  var strHtml = "";
-  const chosenVideos = videos.slice(0, 5);
-
-  chosenVideos.forEach((video, index) => {
-    const videoId = video.id.videoId;
-
-    const title = video.snippet.title;
-
-    strHtml += `
-
-            <div class="video-item" data-index="${index}" onclick="onDisplayMain(${index})"
-">
-
-                <h4 class="video-title">${title}</h4>
-
-                <iframe class="sec-video"  
-
-                    src="https://www.youtube.com/embed/${videoId}"
-
-                    frameborder="0" allowfullscreen>
-
-                </iframe>
-
-            </div>`;
-  });
-
-  videoContainer.innerHTML = strHtml;
-}
-
-function onDisplayMain(index) {
-  const video = gCacheVideos[index];
-  renderMainVideo(video);
-}
-
 
 function search() {
-  const elInput = document.querySelector(".search-input");
+  const elInput = document.querySelector(".search-input")
+  const value = elInput.value.trim()
+  if (!value) return
 
-  const value = elInput.value.trim();
+  fetchVideos(value).then(() => {
+    renderVideos(gCacheVideos)
+    renderMainVideo(gCacheVideos[0])
+  })
 
-  if (!value) return;
-
-  fetchAndRenderVideos(value);
-
-  fetchAndRenderWiki(value);
-
-  addToCache(value);
-
-  renderSearchHistory(gCacheSearches);
-}
-
-function renderWiki(search) {
-  const wikiContainer = document.querySelector(".wikipedia-container");
-
-  wikiContainer.innerHTML = "";
-
-  var strHtml = "";
-
-  if (!search || search.length === 0) {
-    wikiContainer.innerHTML = "<p>No Wikipedia results found.</p>";
-
-    return;
-  }
-
-  const result = search[0];
-
-  strHtml += `
-
-        <div class="wiki-item">
-
-            <h4 class="wiki-title">${result.title}</h4>
-
-            <p class="wiki-snippet">${result.snippet}</p>
-
-            <a href="https://en.wikipedia.org/?curid=${result.pageid}" target="_blank" class="wiki-link">Read more</a>
-
-        </div>`;
-
-  wikiContainer.innerHTML = strHtml;
-}
-
-function handleKeyPress(event) {
-  if (event.key === "Enter") {
-    search();
-  }
-}
-
-function renderSearchHistory(value) {
-  const elSearchHistoryContainer = document.querySelector(
-    ".search-history-container",
-  );
-
-  elSearchHistoryContainer.innerHTML = "";
-
-  const historyItems = Array.isArray(value) ? value.slice().reverse() : [value];
-
-  historyItems.forEach((item) => {
-    elSearchHistoryContainer.innerHTML += `
-
-        <span class="search-history-item" onclick="onClickedSearchTerm('${item}')">${item}</span>`;
-  });
+  fetchWiki(value).then(renderWiki)
+  addToCache(value)
+  renderSearchHistory(gCacheSearches)
 }
 
 function onClickedSearchTerm(item) {
-  fetchAndRenderVideos(item);
+  fetchVideos(item).then(() => {
+    renderVideos(gCacheVideos)
+    renderMainVideo(gCacheVideos[0])
+  })
 
-  fetchAndRenderWiki(item);
-
-  renderSearchHistory(gCacheSearches);
+  fetchWiki(item).then(renderWiki)
+  renderSearchHistory(gCacheSearches)
 }
 
-function addToCache(value) {
-  if (gCacheSearches.length === 8) return;
+function onDisplayMain(index) {
+  renderMainVideo(gCacheVideos[index])
+}
 
-  gCacheSearches.push(value);
+function handleKeyPress(event) {
+  if (event.key === "Enter") search()
+}
 
-  saveToStorage(STORAGE_KEY_SEARCHES, gCacheSearches);
+function renderVideos(videos) {
+  const videoContainer = document.querySelector(".video-container")
+  const chosenVideos = videos.slice(0, 5)
+
+  const strHtml = chosenVideos.map((video, index) => {
+    const videoId = video.id.videoId
+    const title = video.snippet.title
+    return `
+      <div class="video-item" data-index="${index}" onclick="onDisplayMain(${index})">
+        <h4 class="video-title">${title}</h4>
+        <iframe class="sec-video" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
+      </div>`
+  }).join("")
+
+  videoContainer.innerHTML = strHtml
+}
+
+function renderMainVideo(video) {
+  const videoId = video.id.videoId
+  const mainVideoContainer = document.querySelector(".main-video-container")
+
+  mainVideoContainer.innerHTML = `
+    <div class="main-video-item">
+      <iframe class="main-video" width="500" height="350" src="https://www.youtube.com/embed/${videoId}"></iframe>
+    </div>`
+}
+
+function renderWiki(results) {
+  const wikiContainer = document.querySelector(".wikipedia-container")
+  if (!results || results.length === 0) {
+    wikiContainer.innerHTML = "<p>No Wikipedia results found.</p>"
+    return
+  }
+
+  const result = results[0]
+  wikiContainer.innerHTML = `
+    <div class="wiki-item">
+      <h4 class="wiki-title">${result.title}</h4>
+      <p class="wiki-snippet">${result.snippet}</p>
+      <a href="https://en.wikipedia.org/?curid=${result.pageid}" target="_blank" class="wiki-link">Read more</a>
+    </div>`
+}
+
+function renderSearchHistory(history) {
+  const elSearchHistoryContainer = document.querySelector(".search-history-container")
+  const items = Array.isArray(history) ? history.slice().reverse() : [history]
+
+  const strHtml = items.map(item => `
+    <span class="search-history-item" onclick="onClickedSearchTerm('${item}')">${item}</span>
+  `).join("")
+
+  elSearchHistoryContainer.innerHTML = strHtml
+}
+
+function focusSearchBar() {
+  document.querySelector(".search-input").focus()
 }
 
 function onClearBtn() {
-    if(!gCacheSearches.length) return
-  document.body.style.opacity = "0.6";
+  if (!gCacheSearches.length) return
+  document.body.classList.add("dimmed")
 
   showDeleteModal().then((confirmed) => {
     if (confirmed) {
-      gCacheSearches = [];
-
-      saveToStorage(STORAGE_KEY_SEARCHES, gCacheSearches);
-
-      renderSearchHistory(gCacheSearches);
+      gCacheSearches.length = 0
+      saveToStorage(STORAGE_KEY_SEARCHES, gCacheSearches)
+      renderSearchHistory(gCacheSearches)
     }
-
-    document.body.style.opacity = "1";
-  });
+    document.body.classList.remove("dimmed")
+  })
 }
 
 function showDeleteModal() {
-  const elModalDeletion = document.querySelector(".confirm-deletion-modal");
+  const elModal = document.querySelector(".confirm-deletion-modal")
+  const confirmBtn = document.querySelector(".btn-confirm")
+  const cancelBtn = document.querySelector(".btn-cancel")
 
-  const confirmBtnDeletion = document.querySelector(".btn-confirm");
-
-  const cancelBtnDeletion = document.querySelector(".btn-cancel");
-
-  elModalDeletion.showModal();
+  elModal.showModal()
 
   return new Promise((resolve) => {
     const close = (result) => {
-      elModalDeletion.close();
+      elModal.close()
+      resolve(result)
+    }
 
-      resolve(result);
-    };
-
-    const onConfirm = () => close(true);
-
-    const onCancel = () => close(false);
-
-    confirmBtnDeletion.addEventListener("click", onConfirm);
-
-    cancelBtnDeletion.addEventListener("click", onCancel);
-  });
+    confirmBtn.onclick = () => close(true);
+    cancelBtn.onclick = () => close(false);
+  })
 }
 
-let colorChange = true;
+let colorChange = true
 
 function changeTheme() {
-  const elHeader = document.querySelector("header");
-
-  const elFooter = document.querySelector("footer");
-
-  const elMain = document.querySelector("main");
-
-  const ThemeChangeButton = document.querySelector(".Theme-change button");
+  const elHeader = document.querySelector("header")
+  const elFooter = document.querySelector("footer")
+  const elMain = document.querySelector("main")
+  const btn = document.querySelector(".Theme-change button")
+  const elData = document.querySelector('.wiki-snippet')
 
   if (colorChange) {
-    elHeader.style.backgroundColor = "#1F1F1F";
-
-    elFooter.style.backgroundColor = "#2C2C2C";
-
-    elMain.style.backgroundColor = "#121212";
-
-    ThemeChangeButton.style.backgroundColor = "#444";
-
-    ThemeChangeButton.style.color = "#ffffff";
+    elHeader.style.backgroundColor = "#1F1F1F"
+    elFooter.style.backgroundColor = "#2C2C2C"
+    elMain.style.backgroundColor = "#121212"
+    btn.style.backgroundColor = "#444"
+    btn.style.color = "#fff"
+    elData.style.color ="#fff"
   } else {
-    elHeader.style.backgroundColor = "#007BFF";
-
-    elFooter.style.backgroundColor = "#007BFF";
-
-    elMain.style.backgroundColor = "#ffffff";
-
-    ThemeChangeButton.style.backgroundColor = "#ffffff";
-
-    ThemeChangeButton.style.color = "#444";
+    elHeader.style.backgroundColor = "#007BFF"
+    elFooter.style.backgroundColor = "#007BFF"
+    elMain.style.backgroundColor = "#fff"
+    btn.style.backgroundColor = "#fff"
+    btn.style.color = "#444"
+    elData.style.color ="#444"
   }
 
-  colorChange = !colorChange;
+  colorChange = !colorChange
 }
 
 function onChangeTheme() {
-  document.body.style.opacity = "0.6";
+  document.body.classList.add("dimmed")
 
   changeThemeModal().then((confirmed) => {
-    if (confirmed) {
-      changeTheme();
-    }
-
-    document.body.style.opacity = "1";
-  });
+    if (confirmed) changeTheme()
+    document.body.classList.remove("dimmed")
+  })
 }
 
 function changeThemeModal() {
-  const elModalColorTheme = document.querySelector(".confirm-Theme-modal");
+  const elModal = document.querySelector(".confirm-Theme-modal")
+  const confirmBtn = document.querySelector(".btn-confirm-change")
+  const cancelBtn = document.querySelector(".btn-cancel-change")
 
-  const confirmBtnColorTheme = document.querySelector(".btn-confirm-change");
-
-  const cancelBtnDColorTheme = document.querySelector(".btn-cancel-change");
-
-  elModalColorTheme.showModal();
+  elModal.showModal()
 
   return new Promise((resolve) => {
     const close = (result) => {
-      elModalColorTheme.close();
+      elModal.close()
+      resolve(result)
+    }
 
-      resolve(result);
-    };
-
-    const onConfirm = () => close(true);
-
-    const onCancel = () => close(false);
-
-    confirmBtnColorTheme.addEventListener("click", onConfirm);
-
-    cancelBtnDColorTheme.addEventListener("click", onCancel);
-  });
+   confirmBtn.onclick = () => close(true);
+   cancelBtn.onclick = () => close(false);
+  })
 }
